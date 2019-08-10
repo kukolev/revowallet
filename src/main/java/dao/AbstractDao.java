@@ -2,14 +2,24 @@ package dao;
 
 import domain.AbstractDomain;
 
+import java.sql.Connection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class AbstractDao<T extends AbstractDomain> {
 
-    private Map<Long, T> data = new ConcurrentHashMap<>();
-    private AtomicLong counter = new AtomicLong();
+    private final Map<Long, T> data = new ConcurrentHashMap<>();
+    private final AtomicLong counter = new AtomicLong();
+    private final Connection conn;
+
+    public AbstractDao(Connection conn) {
+        this.conn = conn;
+    }
+
+    public Connection getConn() {
+        return conn;
+    }
 
     public Map<Long, T> getData() {
         return data;

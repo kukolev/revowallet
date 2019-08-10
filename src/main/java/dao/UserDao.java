@@ -2,7 +2,13 @@ package dao;
 
 import domain.User;
 
+import java.sql.Connection;
+
 public class UserDao extends AbstractDao<User> {
+
+    public UserDao(Connection conn) {
+        super(conn);
+    }
 
     public User findUserByName(String name) {
         return getData().values()

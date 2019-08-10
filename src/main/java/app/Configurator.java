@@ -13,14 +13,25 @@ import service.AccountService;
 import servlet.AccountServlet;
 import service.UserService;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+import static util.DatabaseUtils.initMemoryDatabase;
+
 public class Configurator {
 
     public void start() {
         AppConfigLoader configLoader = new AppConfigLoader();
         AppConfig config = configLoader.load();
 
-        AccountDao accountDao = new AccountDao();
-        UserDao userDao = new UserDao();
+        Connection conn = initConnection(config);
+        if (config.isMem()) {
+            initMemoryDatabase(conn);
+        }
+
+        AccountDao accountDao = new AccountDao(conn);
+        UserDao userDao = new UserDao(conn);
         AccountService accountService = new AccountService(accountDao, userDao);
         UserService userService = new UserService(userDao);
         AccountServlet accountServlet = new AccountServlet(accountService);
@@ -30,6 +41,16 @@ public class Configurator {
         initServer(config, accountServlet, userServlet, transferServlet);
     }
 
+    private Connection initConnection(AppConfig config) {
+        try {
+            Connection conn = DriverManager.getConnection(config.getConnectionString(), config.getUser(), config.getPass());
+            conn.setAutoCommit(false);
+            return conn;
+        } catch (SQLException e) {
+            // todo: add own exception or message
+            throw new RuntimeException(e);
+        }
+    }
 
     private Server initServer(AppConfig config,
                               AccountServlet accountServlet,
