@@ -1,7 +1,9 @@
 package servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dto.Transfer;
+import dto.TransferDto;
+import exceptions.AccountNotFoundException;
+import exceptions.NotEnoughMoneyException;
 import service.AccountService;
 
 import javax.servlet.http.HttpServlet;
@@ -22,9 +24,16 @@ public class TransferServlet extends HttpServlet {
     // todo: throw error
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String payload = extractPostRequestBody(req);
-        Transfer transfer = objectMapper.readValue(payload, Transfer.class);
-        accountService.transfer(transfer.getSource(), transfer.getDestination(), transfer.getMoney());
+        try {
+            String payload = extractPostRequestBody(req);
+            TransferDto transferDto = objectMapper.readValue(payload, TransferDto.class);
+            accountService.transfer(transferDto.getSource(), transferDto.getDestination(), transferDto.getMoney());
+        } catch (Exception e) {
+            if (e instanceof NotEnoughMoneyException
+                    || e instanceof AccountNotFoundException) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            }
+        }
     }
 
 }

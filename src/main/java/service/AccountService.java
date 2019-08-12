@@ -4,6 +4,8 @@ import dao.AccountDao;
 import dao.UserDao;
 import domain.Account;
 import domain.User;
+import exceptions.AccountNotFoundException;
+import exceptions.NotEnoughMoneyException;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -27,10 +29,23 @@ public class AccountService extends AbstractService {
         log(Level.INFO, "Start transfer");
         Account source = accountDao.find(accNumberSource);
         Account dest = accountDao.find(accNumberDest);
-        source.dec(money);
-        dest.inc(money);
-        accountDao.save(source);
-        accountDao.save(dest);
+
+        // todo: move validations in separate methods
+        if (source == null || dest == null) {
+            throw new AccountNotFoundException();
+        }
+
+        BigDecimal newSourceMoney = source.getMoney().subtract(money);
+
+        if (newSourceMoney.compareTo(BigDecimal.valueOf(0L)) >= 0) {
+            // todo: should be in one transaction
+            source.dec(money);
+            dest.inc(money);
+            accountDao.save(source);
+            accountDao.save(dest);
+        } else {
+            throw new NotEnoughMoneyException();
+        }
     }
 
     public Account find(long accNumber) {
