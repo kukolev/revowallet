@@ -15,15 +15,13 @@ public abstract class AbstractDao<T extends AbstractDomain> {
         this.conn = conn;
     }
 
-    protected Connection getConn() {
+    Connection getConn() {
         return conn;
     }
 
     public abstract T find(long id);
 
-    // todo: replace with correct exceptions
     public abstract T persist(T obj);
 
-    // todo: replace with correct exceptions
     public abstract void save(T obj);
 }

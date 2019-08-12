@@ -13,7 +13,7 @@ public class DatabaseUtils {
                     "CREATE TABLE Accounts (\n" +
                             "account_id long auto_increment,\n" +
                             "account_number varchar(255),\n" +
-                            "money varchar(255),\n" +
+                            "money numeric(10,2),\n" +
                             "user_id long,\n" +
                             "is_active bool,\n" +
                             ");");
@@ -27,7 +27,6 @@ public class DatabaseUtils {
 
             conn.commit();
         } catch (SQLException e) {
-            // todo: change message or create own exception
             throw new RuntimeException(e);
         }
     }

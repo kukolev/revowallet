@@ -1,6 +1,5 @@
 package servlet;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import domain.Account;
 import service.AccountService;
@@ -11,6 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static util.ServletUtils.extractPostRequestBody;
 
 public class AccountServlet extends HttpServlet {
@@ -23,44 +26,64 @@ public class AccountServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response) throws IOException {
-// todo: throw error
-        String id = request.getParameter("id");
-        String phone = request.getParameter("phone");
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
 
-        String result = null;
-        if (id != null) {
-            result = findById(id);
-        } else if (phone != null) {
-            result = findByPhone(phone);
+            String idStr = req.getParameter("id");
+            String phone = req.getParameter("phone");
+
+            if (idStr != null) {
+                Long id = Long.valueOf(idStr);
+                findById(id, resp);
+            } else if (phone != null) {
+                findByPhone(phone, resp);
+            }
+
+        } catch (NumberFormatException e) {
+            resp.setStatus(SC_BAD_REQUEST);
+            resp.getWriter().println(e.getMessage());
+        } catch (RuntimeException e) {
+            resp.setStatus(SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().println(e.getMessage());
         }
-
-        response.setContentType("application/json");
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().println(result);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String s = extractPostRequestBody(req);
-        Account account = mapper.readValue(s, Account.class);
-        if (account.getId() == null) {
+        try {
+
+            String payload = extractPostRequestBody(req);
+            Account account = mapper.readValue(payload, Account.class);
             Account result = accountService.persist(account);
             String responsePayload = mapper.writeValueAsString(result);
+            resp.setStatus(SC_OK);
             resp.getWriter().println(responsePayload);
-        } else {
-            // todo: throw error
+
+        } catch (RuntimeException e) {
+            resp.setStatus(SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().println(e.getMessage());
         }
     }
 
-    private String findById(String accNumber) throws JsonProcessingException {
-        Account account = accountService.find(Long.valueOf(accNumber));
-        return mapper.writeValueAsString(account);
+    private void findById(Long id, HttpServletResponse resp) throws IOException {
+        Account account = accountService.find(id);
+        if (account == null) {
+            resp.setStatus(SC_NOT_FOUND);
+        } else {
+            String resultPayload = mapper.writeValueAsString(account);
+            resp.setStatus(SC_OK);
+            resp.getWriter().println(resultPayload);
+        }
     }
 
-    private String findByPhone(String phone) throws JsonProcessingException {
+    private void findByPhone(String phone, HttpServletResponse resp) throws IOException {
         List<Account> accounts = accountService.findAccountsByUserPhone(phone);
-        return mapper.writeValueAsString(accounts);
+        if (accounts.isEmpty()) {
+            resp.setStatus(SC_NOT_FOUND);
+        } else {
+            String resultPayload = mapper.writeValueAsString(accounts);
+            resp.setStatus(SC_OK);
+            resp.getWriter().println(resultPayload);
+        }
     }
 }

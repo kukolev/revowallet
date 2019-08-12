@@ -4,8 +4,8 @@ import dao.AccountDao;
 import dao.UserDao;
 import domain.Account;
 import domain.User;
-import exceptions.AccountNotFoundException;
-import exceptions.NotEnoughMoneyException;
+import exception.AccountNotFoundException;
+import exception.NotEnoughMoneyException;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -25,31 +25,32 @@ public class AccountService extends AbstractService {
         this.userDao = userDao;
     }
 
-    public void transfer(long accNumberSource, long accNumberDest, BigDecimal money) {
+    public void transfer(Long idSource, Long idDest, BigDecimal money) {
         log(Level.INFO, "Start transfer");
-        Account source = accountDao.find(accNumberSource);
-        Account dest = accountDao.find(accNumberDest);
+        Account source = accountDao.find(idSource);
+        Account dest = accountDao.find(idDest);
 
-        // todo: move validations in separate methods
+        validateAccounts(source, dest);
+        validateEnoughMoney(source, money);
+
+        accountDao.transfer(source, dest, money);
+    }
+
+    private void validateAccounts(Account source, Account dest) {
         if (source == null || dest == null) {
             throw new AccountNotFoundException();
         }
+    }
 
-        BigDecimal newSourceMoney = source.getMoney().subtract(money);
-
-        if (newSourceMoney.compareTo(BigDecimal.valueOf(0L)) >= 0) {
-            // todo: should be in one transaction
-            source.dec(money);
-            dest.inc(money);
-            accountDao.save(source);
-            accountDao.save(dest);
-        } else {
+    private void validateEnoughMoney(Account source, BigDecimal transferMoney) {
+        BigDecimal newSourceMoney = source.getMoney().subtract(transferMoney);
+        if (newSourceMoney.compareTo(BigDecimal.valueOf(0L)) < 0) {
             throw new NotEnoughMoneyException();
         }
     }
 
-    public Account find(long accNumber) {
-        return accountDao.find(accNumber);
+    public Account find(long id) {
+        return accountDao.find(id);
     }
 
     public Account persist(Account account) {

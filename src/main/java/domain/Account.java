@@ -7,7 +7,6 @@ public class Account extends AbstractDomain {
     private String accountNumber;
     private BigDecimal money;
     private Long userId;
-
     private boolean isActive;
 
     public Long getUserId() {

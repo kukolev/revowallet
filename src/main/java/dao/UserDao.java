@@ -13,11 +13,10 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class UserDao extends AbstractDao<User> {
 
-    private final String INSERT_USER = "INSERT INTO USERS(name, phone) VALUES(?, ?)";
-    private final String SELECT_USER_BY_ID = "SELECT user_id, name, phone FROM Users WHERE user_id = ?";
-    private final String SELECT_USER_BY_PHONE = "SELECT user_id, name, phone FROM Users WHERE phone = ?";
-    private final String SELECT_ACCOUNTS_BY_USER_ID = "SELECT account_id FROM Accounts WHERE user_id = ?";
-
+    private static final String INSERT_USER = "INSERT INTO USERS(name, phone) VALUES(?, ?)";
+    private static final String SELECT_USER_BY_ID = "SELECT user_id, name, phone FROM Users WHERE user_id = ?";
+    private static final String SELECT_USER_BY_PHONE = "SELECT user_id, name, phone FROM Users WHERE phone = ?";
+    private static final String SELECT_ACCOUNTS_BY_USER_ID = "SELECT account_id FROM Accounts WHERE user_id = ?";
 
     public UserDao(Connection conn) {
         super(conn);

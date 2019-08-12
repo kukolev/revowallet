@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static util.ServletUtils.extractPostRequestBody;
 
 public class UserServlet extends HttpServlet {
@@ -20,13 +22,21 @@ public class UserServlet extends HttpServlet {
         this.userService = userService;
     }
 
-    // todo: throw error
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String payload = extractPostRequestBody(req);
-        User user = mapper.readValue(payload, User.class);
-        User persistedUser = userService.persist(user);
-        String resultPayload = mapper.writeValueAsString(persistedUser);
-        resp.getWriter().println(resultPayload);
+        int respStatus = SC_OK;
+        try {
+
+            String payload = extractPostRequestBody(req);
+            User user = mapper.readValue(payload, User.class);
+            User persistedUser = userService.persist(user);
+            String resultPayload = mapper.writeValueAsString(persistedUser);
+            resp.getWriter().println(resultPayload);
+
+        } catch (RuntimeException e) {
+            respStatus = SC_INTERNAL_SERVER_ERROR;
+            resp.getWriter().println(e.getMessage());
+        }
+        resp.setStatus(respStatus);
     }
 }

@@ -47,7 +47,6 @@ public class Configurator {
             conn.setAutoCommit(false);
             return conn;
         } catch (SQLException e) {
-            // todo: add own exception or message
             throw new RuntimeException(e);
         }
     }
