@@ -154,11 +154,13 @@ public class Front2BackTest {
         Account aliceAccount = new Account();
         aliceAccount.setAccountNumber("40817810099910000001");
         aliceAccount.setActive(true);
+        aliceAccount.setUserId(alice.getId());
         aliceAccount.setMoney(new BigDecimal("1000.0"));
 
         Account bobAccount = new Account();
         bobAccount.setAccountNumber("4081781009991000000");
         bobAccount.setActive(true);
+        bobAccount.setUserId(bob.getId());
         bobAccount.setMoney(new BigDecimal("2000.0"));
 
         httpPost = new HttpPost("http://localhost:8888/test/account");
@@ -174,21 +176,21 @@ public class Front2BackTest {
         bobPayload = EntityUtils.toString(response.getEntity());
         bobAccount = mapper.readValue(bobPayload, Account.class);
 
-        AddAccountDto aliceAddDto = new AddAccountDto();
-        aliceAddDto.setUserId(alice.getId());
-        aliceAddDto.setAccountId(aliceAccount.getId());
-
-        AddAccountDto bobAddDto = new AddAccountDto();
-        bobAddDto.setUserId(bob.getId());
-        bobAddDto.setAccountId(bobAccount.getId());
-
-        HttpPut httpPut = new HttpPut("http://localhost:8888/test/user");
-        alicePayload = mapper.writeValueAsString(aliceAddDto);
-        httpPut.setEntity(new StringEntity(alicePayload));
-        client.execute(httpPut);
-
-        bobPayload = mapper.writeValueAsString(bobAddDto);
-        httpPut.setEntity(new StringEntity(bobPayload));
-        client.execute(httpPut);
+//        AddAccountDto aliceAddDto = new AddAccountDto();
+//        aliceAddDto.setUserId(alice.getId());
+//        aliceAddDto.setAccountId(aliceAccount.getId());
+//
+//        AddAccountDto bobAddDto = new AddAccountDto();
+//        bobAddDto.setUserId(bob.getId());
+//        bobAddDto.setAccountId(bobAccount.getId());
+//
+//        HttpPut httpPut = new HttpPut("http://localhost:8888/test/user");
+//        alicePayload = mapper.writeValueAsString(aliceAddDto);
+//        httpPut.setEntity(new StringEntity(alicePayload));
+//        client.execute(httpPut);
+//
+//        bobPayload = mapper.writeValueAsString(bobAddDto);
+//        httpPut.setEntity(new StringEntity(bobPayload));
+//        client.execute(httpPut);
     }
 }

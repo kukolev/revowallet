@@ -6,7 +6,17 @@ public class Account extends AbstractDomain {
 
     private String accountNumber;
     private BigDecimal money;
+    private Long userId;
+
     private boolean isActive;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     public void inc(BigDecimal money) {
         setMoney(this.money.add(money));

@@ -51,15 +51,4 @@ public class AccountService extends AbstractService {
                 .map(accountDao::find)
                 .collect(Collectors.toList());
     }
-
-    public List<Account> findAccountsByUserName(String name) {
-        User user = userDao.findUserByName(name);
-        if (user == null) {
-            return new ArrayList<>();
-        }
-        return user.getAccounts()
-                .stream()
-                .map(accountDao::find)
-                .collect(Collectors.toList());
-    }
 }

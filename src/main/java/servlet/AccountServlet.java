@@ -28,15 +28,12 @@ public class AccountServlet extends HttpServlet {
 // todo: throw error
         String id = request.getParameter("id");
         String phone = request.getParameter("phone");
-        String name = request.getParameter("name");
 
         String result = null;
         if (id != null) {
             result = findById(id);
         } else if (phone != null) {
             result = findByPhone(phone);
-        } else if (name != null) {
-            result = findByName(name);
         }
 
         response.setContentType("application/json");
@@ -64,11 +61,6 @@ public class AccountServlet extends HttpServlet {
 
     private String findByPhone(String phone) throws JsonProcessingException {
         List<Account> accounts = accountService.findAccountsByUserPhone(phone);
-        return mapper.writeValueAsString(accounts);
-    }
-
-    private String findByName(String name) throws JsonProcessingException {
-        List<Account> accounts = accountService.findAccountsByUserName(name);
         return mapper.writeValueAsString(accounts);
     }
 }

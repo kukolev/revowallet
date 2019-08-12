@@ -11,15 +11,16 @@ public class DatabaseUtils {
             Statement statement = conn.createStatement();
             statement.execute(
                     "CREATE TABLE Accounts (\n" +
-                            "account_id long,\n" +
+                            "account_id long auto_increment,\n" +
                             "account_number varchar(255),\n" +
+                            "money varchar(255),\n" +
                             "user_id long,\n" +
                             "is_active bool,\n" +
                             ");");
 
             statement.execute(
                     "CREATE TABLE Users (\n" +
-                            "user_id long,\n" +
+                            "user_id long auto_increment primary key,\n" +
                             "name varchar(255),\n" +
                             "phone varchar(255),\n" +
                             ");");

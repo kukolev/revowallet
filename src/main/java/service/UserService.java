@@ -14,12 +14,4 @@ public class UserService extends AbstractService {
     public User persist(User user) {
         return userDao.persist(user);
     }
-
-    public void addAccount(Long userId, Long accountId) {
-        User user = userDao.find(userId);
-        if (!user.getAccounts().contains(accountId)) {
-            user.getAccounts().add(accountId);
-        }
-        userDao.save(user);
-    }
 }
