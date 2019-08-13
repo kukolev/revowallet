@@ -1,27 +1,30 @@
 package dao;
 
 import domain.AbstractDomain;
+import org.apache.commons.dbcp.BasicDataSource;
 
 import java.sql.Connection;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
+import java.sql.SQLException;
 
-public abstract class AbstractDao<T extends AbstractDomain> {
+abstract class AbstractDao<T extends AbstractDomain> {
 
-    private final Connection conn;
+    private final BasicDataSource dataSource;
 
-    AbstractDao(Connection conn) {
-        this.conn = conn;
+    AbstractDao(BasicDataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     Connection getConn() {
-        return conn;
+        try {
+            Connection conn = dataSource.getConnection();
+            conn.setAutoCommit(false);
+            return conn;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public abstract T find(long id);
 
     public abstract T persist(T obj);
-
-    public abstract void save(T obj);
 }

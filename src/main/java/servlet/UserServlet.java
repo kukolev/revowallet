@@ -2,6 +2,8 @@ package servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import domain.User;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import service.UserService;
 
 import javax.servlet.http.HttpServlet;
@@ -15,6 +17,7 @@ import static util.ServletUtils.extractPostRequestBody;
 
 public class UserServlet extends HttpServlet {
 
+    private static final Logger LOGGER = LogManager.getLogger(UserServlet.class.getCanonicalName());
     private final UserService userService;
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -24,19 +27,22 @@ public class UserServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        int respStatus = SC_OK;
         try {
 
             String payload = extractPostRequestBody(req);
+            LOGGER.debug("Start doPost: payload = {}", payload);
             User user = mapper.readValue(payload, User.class);
             User persistedUser = userService.persist(user);
             String resultPayload = mapper.writeValueAsString(persistedUser);
+
+            resp.setStatus(SC_OK);
             resp.getWriter().println(resultPayload);
 
         } catch (RuntimeException e) {
-            respStatus = SC_INTERNAL_SERVER_ERROR;
+            LOGGER.error(e);
+            resp.setStatus(SC_INTERNAL_SERVER_ERROR);
             resp.getWriter().println(e.getMessage());
         }
-        resp.setStatus(respStatus);
+        LOGGER.debug("Finish doPost: status = {}", resp.getStatus());
     }
 }

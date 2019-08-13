@@ -2,6 +2,8 @@ package servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import domain.Account;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import service.AccountService;
 
 import javax.servlet.http.HttpServlet;
@@ -18,6 +20,7 @@ import static util.ServletUtils.extractPostRequestBody;
 
 public class AccountServlet extends HttpServlet {
 
+    private static final Logger LOGGER = LogManager.getLogger(AccountServlet.class.getCanonicalName());
     private final AccountService accountService;
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -28,9 +31,9 @@ public class AccountServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-
             String idStr = req.getParameter("id");
             String phone = req.getParameter("phone");
+            LOGGER.debug("Start doGet: idStr = {}, phone = {}", idStr, phone);
 
             if (idStr != null) {
                 Long id = Long.valueOf(idStr);
@@ -40,19 +43,23 @@ public class AccountServlet extends HttpServlet {
             }
 
         } catch (NumberFormatException e) {
+            LOGGER.error(e);
             resp.setStatus(SC_BAD_REQUEST);
             resp.getWriter().println(e.getMessage());
         } catch (RuntimeException e) {
+            LOGGER.error(e);
             resp.setStatus(SC_INTERNAL_SERVER_ERROR);
             resp.getWriter().println(e.getMessage());
         }
+        LOGGER.debug("Finish doGet: status = {}", resp.getStatus());
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-
             String payload = extractPostRequestBody(req);
+            LOGGER.debug("Start doPost: payload = {}", payload);
+
             Account account = mapper.readValue(payload, Account.class);
             Account result = accountService.persist(account);
             String responsePayload = mapper.writeValueAsString(result);
@@ -60,9 +67,11 @@ public class AccountServlet extends HttpServlet {
             resp.getWriter().println(responsePayload);
 
         } catch (RuntimeException e) {
+            LOGGER.error(e);
             resp.setStatus(SC_INTERNAL_SERVER_ERROR);
             resp.getWriter().println(e.getMessage());
         }
+        LOGGER.debug("Finish doPost: status = {}", resp.getStatus());
     }
 
     private void findById(Long id, HttpServletResponse resp) throws IOException {

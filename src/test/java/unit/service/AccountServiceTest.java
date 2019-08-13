@@ -14,34 +14,30 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class AccountServiceTest {
+class AccountServiceTest {
 
     private AccountService accountService;
     private AccountDao accountDao;
-    private UserDao userDao;
 
     @BeforeEach
-    public void init() {
+    void init() {
         accountDao = mock(AccountDao.class);
-        userDao = mock(UserDao.class);
+        UserDao userDao = mock(UserDao.class);
         accountService = new AccountService(accountDao, userDao);
         MockitoAnnotations.initMocks(AccountServiceTest.class);
 
         Account account1 = new Account();
         account1.setId(1L);
         account1.setAccountNumber("1");
-        account1.setActive(true);
         account1.setMoney(new BigDecimal("1000"));
 
         Account account2 = new Account();
         account2.setId(2L);
         account2.setAccountNumber("2");
-        account2.setActive(true);
         account2.setMoney(new BigDecimal("2000"));
 
         when(accountDao.find(1)).thenReturn(account1);
@@ -49,7 +45,7 @@ public class AccountServiceTest {
     }
 
     @Test
-    public void testTransfer() {
+    void testTransfer() {
         accountService.transfer(1L, 2L, new BigDecimal("100.10"));
         Account account1 = accountDao.find(1);
         Account account2 = accountDao.find(2);
@@ -57,7 +53,7 @@ public class AccountServiceTest {
     }
 
     @Test
-    public void testTransferValidateAccountExists() {
+    void testTransferValidateAccountExists() {
         try {
             accountService.transfer(100500L, 2L, new BigDecimal("100.10"));
         } catch (RuntimeException e) {
@@ -66,7 +62,7 @@ public class AccountServiceTest {
     }
 
     @Test
-    public void testTransferValidateEnoughMoney() {
+    void testTransferValidateEnoughMoney() {
         try {
             accountService.transfer(1L, 2L, new BigDecimal("1000000000.0"));
         } catch (RuntimeException e) {

@@ -1,6 +1,7 @@
 package dao;
 
 import domain.Account;
+import org.apache.commons.dbcp.BasicDataSource;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -17,16 +18,17 @@ public class AccountDao extends AbstractDao<Account> {
     private static final String SELECT_ACCOUNT_BY_ID = "SELECT account_id, account_number, money, user_id FROM Accounts WHERE account_id = ?";
     private static final String UPDATE_MONEY =
             "UPDATE Accounts SET money = money - ? WHERE account_id = ?;" +
-            "UPDATE Accounts SET money = money + ? WHERE account_id = ?";
+                    "UPDATE Accounts SET money = money + ? WHERE account_id = ?";
 
-    public AccountDao(Connection conn) {
-        super(conn);
+    public AccountDao(BasicDataSource dataSource) {
+        super(dataSource);
     }
 
     @Override
     public Account find(long id) {
+        Connection conn = getConn();
         try {
-            PreparedStatement statement = getConn().prepareStatement(SELECT_ACCOUNT_BY_ID, RETURN_GENERATED_KEYS);
+            PreparedStatement statement = conn.prepareStatement(SELECT_ACCOUNT_BY_ID, RETURN_GENERATED_KEYS);
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -35,62 +37,112 @@ public class AccountDao extends AbstractDao<Account> {
                 account.setAccountNumber(resultSet.getString("account_number"));
                 account.setMoney(resultSet.getBigDecimal("money"));
                 account.setUserId(resultSet.getLong("user_id"));
-                getConn().commit();
+                conn.commit();
+                conn.close();
                 return account;
             }
-            getConn().commit();
+            conn.commit();
             return null;
         } catch (SQLException e) {
+            try {
+                conn.rollback();
+            } catch (SQLException e1) {
+                throw new RuntimeException(e1);
+            }
             throw new RuntimeException(e);
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e2) {
+                e2.printStackTrace();
+            }
         }
     }
 
-    @Override
     public void save(Account obj) {
+        Connection conn = getConn();
         try {
-            PreparedStatement statement = getConn().prepareStatement(UPDATE_ACCOUNT);
+            PreparedStatement statement = conn.prepareStatement(UPDATE_ACCOUNT);
             statement.setString(1, obj.getAccountNumber());
             statement.setBigDecimal(2, obj.getMoney());
             statement.setLong(3, obj.getUserId());
             statement.setLong(4, obj.getId());
             statement.executeUpdate();
-            getConn().commit();
+            conn.commit();
+            conn.close();
         } catch (SQLException e) {
+            try {
+                conn.rollback();
+            } catch (SQLException e1) {
+                throw new RuntimeException(e1);
+            }
             throw new RuntimeException(e);
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e2) {
+                e2.printStackTrace();
+            }
         }
     }
 
     @Override
     public Account persist(Account obj) {
+        Connection conn = getConn();
         try {
-            PreparedStatement statement = getConn().prepareStatement(INSERT_ACCOUNT, RETURN_GENERATED_KEYS);
+            PreparedStatement statement = conn.prepareStatement(INSERT_ACCOUNT, RETURN_GENERATED_KEYS);
             statement.setString(1, obj.getAccountNumber());
             statement.setBigDecimal(2, obj.getMoney());
             statement.setLong(3, obj.getUserId());
             statement.executeUpdate();
+
             ResultSet resultSet = statement.getGeneratedKeys();
             resultSet.next();
             long accountId = resultSet.getLong(1);
             obj.setId(accountId);
-            getConn().commit();
+            conn.commit();
             return obj;
         } catch (SQLException e) {
+            try {
+                conn.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+                throw new RuntimeException(e1);
+            }
+            e.printStackTrace();
             throw new RuntimeException(e);
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e2) {
+                e2.printStackTrace();
+            }
         }
     }
 
     public void transfer(Account source, Account dest, BigDecimal money) {
+        Connection conn = getConn();
         try {
-            PreparedStatement statement = getConn().prepareStatement(UPDATE_MONEY);
+            PreparedStatement statement = conn.prepareStatement(UPDATE_MONEY);
             statement.setBigDecimal(1, money);
             statement.setLong(2, source.getId());
             statement.setBigDecimal(3, money);
             statement.setLong(4, dest.getId());
             statement.executeUpdate();
-
-            getConn().commit();
+            conn.commit();
         } catch (SQLException e) {
+            try {
+                conn.rollback();
+            } catch (SQLException e1) {
+                throw new RuntimeException(e1);
+            }
             throw new RuntimeException(e);
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e2) {
+                e2.printStackTrace();
+            }
         }
     }
 }

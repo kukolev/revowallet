@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class AppConfigLoader {
+class AppConfigLoader {
 
     public AppConfig load() {
 
@@ -19,10 +19,11 @@ public class AppConfigLoader {
             appConfig.setConnectionString(prop.getProperty("connection_string"));
             appConfig.setUser(prop.getProperty("user"));
             appConfig.setPass(prop.getProperty("pass"));
-            appConfig.setMem(new Boolean(prop.getProperty("is_mem")));
+            appConfig.setMem(Boolean.valueOf(prop.getProperty("is_mem")));
 
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return appConfig;

@@ -20,122 +20,122 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class Front2BackTest {
+class Front2BackTest {
 
     @BeforeAll
-    public static void init() throws Exception {
+    static void init() throws Exception {
         Configurator configurator = new Configurator();
         configurator.start();
         initTestData();
     }
 
     @Test
-    public void testTransferAliceToBob() throws IOException {
+    void testTransferAliceToBob() throws IOException {
         // Find money of both
-        Long aliceAccontId = queryAccountFirstByPhone("7 (777) 777-77-77");
-        Long bobAccontId = queryAccountFirstByPhone("7 (666) 666-66-66");
-        BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccontId);
-        BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccontId);
+        Long aliceAccountId = queryAccountFirstByPhone("7 (777) 777-77-77");
+        Long bobAccountId = queryAccountFirstByPhone("7 (666) 666-66-66");
+        BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccountId);
+        BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccountId);
 
         // TransferDto money from Alice to Bob
         BigDecimal money = new BigDecimal("541.32");
-        transferMoney(aliceAccontId, bobAccontId, money);
+        transferMoney(aliceAccountId, bobAccountId, money);
 
         // Check result
-        BigDecimal aliceFinMoney = queryMoneyByAccountId(aliceAccontId);
-        BigDecimal bobFinMoney = queryMoneyByAccountId(bobAccontId);
+        BigDecimal aliceFinMoney = queryMoneyByAccountId(aliceAccountId);
+        BigDecimal bobFinMoney = queryMoneyByAccountId(bobAccountId);
         assertEquals(bobFinMoney, bobStartMoney.add(money));
         assertEquals(aliceFinMoney, aliceStartMoney.subtract(money));
     }
 
     @Test
-    public void testTransferNothing() throws IOException {
+    void testTransferNothing() throws IOException {
         // Find money of both
-        Long aliceAccontId = queryAccountFirstByPhone("7 (777) 777-77-77");
-        Long bobAccontId = queryAccountFirstByPhone("7 (666) 666-66-66");
-        BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccontId);
-        BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccontId);
+        Long aliceAccountId = queryAccountFirstByPhone("7 (777) 777-77-77");
+        Long bobAccountId = queryAccountFirstByPhone("7 (666) 666-66-66");
+        BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccountId);
+        BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccountId);
 
         // TransferDto money from Alice to Bob
         BigDecimal money = new BigDecimal("0.0");
-        transferMoney(aliceAccontId, bobAccontId, money);
+        transferMoney(aliceAccountId, bobAccountId, money);
 
         // Check result
-        BigDecimal aliceFinMoney = queryMoneyByAccountId(aliceAccontId);
-        BigDecimal bobFinMoney = queryMoneyByAccountId(bobAccontId);
+        BigDecimal aliceFinMoney = queryMoneyByAccountId(aliceAccountId);
+        BigDecimal bobFinMoney = queryMoneyByAccountId(bobAccountId);
         assertEquals(bobFinMoney, bobStartMoney);
         assertEquals(aliceFinMoney, aliceStartMoney);
     }
 
     @Test
-    public void testTransferBobToAlice() throws IOException {
+    void testTransferBobToAlice() throws IOException {
         // Find money of both
-        Long aliceAccontId = queryAccountFirstByPhone("7 (777) 777-77-77");
-        Long bobAccontId = queryAccountFirstByPhone("7 (666) 666-66-66");
-        BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccontId);
-        BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccontId);
+        Long aliceAccountId = queryAccountFirstByPhone("7 (777) 777-77-77");
+        Long bobAccountId = queryAccountFirstByPhone("7 (666) 666-66-66");
+        BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccountId);
+        BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccountId);
 
         // TransferDto money from Bob to Alice
         BigDecimal money = new BigDecimal("123.45");
-        transferMoney(bobAccontId, aliceAccontId, money);
+        transferMoney(bobAccountId, aliceAccountId, money);
 
         // Check result
-        BigDecimal aliceFinMoney = queryMoneyByAccountId(aliceAccontId);
-        BigDecimal bobFinMoney = queryMoneyByAccountId(bobAccontId);
+        BigDecimal aliceFinMoney = queryMoneyByAccountId(aliceAccountId);
+        BigDecimal bobFinMoney = queryMoneyByAccountId(bobAccountId);
         assertEquals(bobFinMoney, bobStartMoney.subtract(money));
         assertEquals(aliceFinMoney, aliceStartMoney.add(money));
     }
 
     @Test
-    public void testsTransferTooMuch() throws IOException {
+    void testsTransferTooMuch() throws IOException {
         // Find money of both
-        Long aliceAccontId = queryAccountFirstByPhone("7 (777) 777-77-77");
-        Long bobAccontId = queryAccountFirstByPhone("7 (666) 666-66-66");
-        BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccontId);
-        BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccontId);
+        Long aliceAccountId = queryAccountFirstByPhone("7 (777) 777-77-77");
+        Long bobAccountId = queryAccountFirstByPhone("7 (666) 666-66-66");
+        BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccountId);
+        BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccountId);
 
         // TransferDto money from Bob to Alice
         BigDecimal money = aliceStartMoney.add(new BigDecimal("1000"));
-        transferMoney(aliceAccontId, bobAccontId, money);
+        transferMoney(aliceAccountId, bobAccountId, money);
 
         // Check result
-        BigDecimal aliceFinMoney = queryMoneyByAccountId(aliceAccontId);
-        BigDecimal bobFinMoney = queryMoneyByAccountId(bobAccontId);
+        BigDecimal aliceFinMoney = queryMoneyByAccountId(aliceAccountId);
+        BigDecimal bobFinMoney = queryMoneyByAccountId(bobAccountId);
         assertEquals(bobFinMoney, bobStartMoney);
         assertEquals(aliceFinMoney, aliceStartMoney);
     }
 
     @Test
-    public void testsTransferWithUnknownSource() throws IOException {
+    void testsTransferWithUnknownSource() throws IOException {
         // Find money of both
-        Long aliceAccontId = Long.MIN_VALUE;
-        Long bobAccontId = queryAccountFirstByPhone("7 (666) 666-66-66");
-        BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccontId);
+        Long aliceAccountId = Long.MIN_VALUE;
+        Long bobAccountId = queryAccountFirstByPhone("7 (666) 666-66-66");
+        BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccountId);
 
         // TransferDto money from Bob to Alice
         BigDecimal money = new BigDecimal("1000");
-        int resultCode = transferMoney(aliceAccontId, bobAccontId, money);
+        int resultCode = transferMoney(aliceAccountId, bobAccountId, money);
         assertEquals(400, resultCode);
 
         // Check result
-        BigDecimal bobFinMoney = queryMoneyByAccountId(bobAccontId);
+        BigDecimal bobFinMoney = queryMoneyByAccountId(bobAccountId);
         assertEquals(bobFinMoney, bobStartMoney);
     }
 
     @Test
-    public void testsTransferWithUnknownDest() throws IOException {
+    void testsTransferWithUnknownDest() throws IOException {
         // Find money of both
-        Long aliceAccontId = queryAccountFirstByPhone("7 (777) 777-77-77");
-        Long bobAccontId = Long.MIN_VALUE;
-        BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccontId);
+        Long aliceAccountId = queryAccountFirstByPhone("7 (777) 777-77-77");
+        Long bobAccountId = Long.MIN_VALUE;
+        BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccountId);
 
         // TransferDto money from Bob to Alice
         BigDecimal money = new BigDecimal("1000");
-        int resultCode = transferMoney(aliceAccontId, bobAccontId, money);
+        int resultCode = transferMoney(aliceAccountId, bobAccountId, money);
         assertEquals(400, resultCode);
 
         // Check result
-        BigDecimal aliceFinMoney = queryMoneyByAccountId(aliceAccontId);
+        BigDecimal aliceFinMoney = queryMoneyByAccountId(aliceAccountId);
         assertEquals(aliceFinMoney, aliceStartMoney);
     }
 
@@ -197,7 +197,6 @@ public class Front2BackTest {
         alicePayload = EntityUtils.toString(response.getEntity());
         alice = mapper.readValue(alicePayload, User.class);
 
-
         httpPost.setEntity(new StringEntity(bobPayload));
         response = client.execute(httpPost);
         bobPayload = EntityUtils.toString(response.getEntity());
@@ -205,44 +204,21 @@ public class Front2BackTest {
 
         Account aliceAccount = new Account();
         aliceAccount.setAccountNumber("40817810099910000001");
-        aliceAccount.setActive(true);
         aliceAccount.setUserId(alice.getId());
         aliceAccount.setMoney(new BigDecimal("1000.0"));
 
         Account bobAccount = new Account();
         bobAccount.setAccountNumber("4081781009991000000");
-        bobAccount.setActive(true);
         bobAccount.setUserId(bob.getId());
         bobAccount.setMoney(new BigDecimal("2000.0"));
 
         httpPost = new HttpPost("http://localhost:8888/test/account");
         alicePayload = mapper.writeValueAsString(aliceAccount);
         httpPost.setEntity(new StringEntity(alicePayload));
-        response = client.execute(httpPost);
-        alicePayload = EntityUtils.toString(response.getEntity());
-        aliceAccount = mapper.readValue(alicePayload, Account.class);
+        client.execute(httpPost);
 
         bobPayload = mapper.writeValueAsString(bobAccount);
         httpPost.setEntity(new StringEntity(bobPayload));
-        response = client.execute(httpPost);
-        bobPayload = EntityUtils.toString(response.getEntity());
-        bobAccount = mapper.readValue(bobPayload, Account.class);
-
-//        AddAccountDto aliceAddDto = new AddAccountDto();
-//        aliceAddDto.setUserId(alice.getId());
-//        aliceAddDto.setAccountId(aliceAccount.getId());
-//
-//        AddAccountDto bobAddDto = new AddAccountDto();
-//        bobAddDto.setUserId(bob.getId());
-//        bobAddDto.setAccountId(bobAccount.getId());
-//
-//        HttpPut httpPut = new HttpPut("http://localhost:8888/test/user");
-//        alicePayload = mapper.writeValueAsString(aliceAddDto);
-//        httpPut.setEntity(new StringEntity(alicePayload));
-//        client.execute(httpPut);
-//
-//        bobPayload = mapper.writeValueAsString(bobAddDto);
-//        httpPut.setEntity(new StringEntity(bobPayload));
-//        client.execute(httpPut);
+        client.execute(httpPost);
     }
 }

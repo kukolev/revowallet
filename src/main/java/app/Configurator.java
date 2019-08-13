@@ -2,6 +2,7 @@ package app;
 
 import dao.AccountDao;
 import dao.UserDao;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -13,10 +14,6 @@ import service.AccountService;
 import servlet.AccountServlet;
 import service.UserService;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
 import static util.DatabaseUtils.initMemoryDatabase;
 
 public class Configurator {
@@ -25,7 +22,7 @@ public class Configurator {
         AppConfigLoader configLoader = new AppConfigLoader();
         AppConfig config = configLoader.load();
 
-        Connection conn = initConnection(config);
+        BasicDataSource conn = initConnection(config);
         if (config.isMem()) {
             initMemoryDatabase(conn);
         }
@@ -41,36 +38,38 @@ public class Configurator {
         initServer(config, accountServlet, userServlet, transferServlet);
     }
 
-    private Connection initConnection(AppConfig config) {
-        try {
-            Connection conn = DriverManager.getConnection(config.getConnectionString(), config.getUser(), config.getPass());
-            conn.setAutoCommit(false);
-            return conn;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    private BasicDataSource initConnection(AppConfig config) {
+        BasicDataSource dataSource = new BasicDataSource();
+        // todo: parameters for max min
+        dataSource.setUrl(config.getConnectionString());
+        dataSource.setUsername(config.getUser());
+        dataSource.setPassword(config.getPass());
+        dataSource.setMinIdle(5);
+        dataSource.setMaxIdle(10);
+        dataSource.setMaxOpenPreparedStatements(100);
+        return dataSource;
     }
 
-    private Server initServer(AppConfig config,
-                              AccountServlet accountServlet,
-                              UserServlet userServlet,
-                              TransferServlet transferServlet) {
+    private void initServer(AppConfig config,
+                            AccountServlet accountServlet,
+                            UserServlet userServlet,
+                            TransferServlet transferServlet) {
         Server server = new Server();
         ServerConnector connector = new ServerConnector(server);
         connector.setPort(Integer.valueOf(config.getPort()));
         server.setConnectors(new Connector[]{connector});
 
         ServletHandler servletHandler = new ServletHandler();
-        servletHandler.addServletWithMapping(new ServletHolder(accountServlet),  "/" + config.getResource() + "/account");
-        servletHandler.addServletWithMapping(new ServletHolder(transferServlet),  "/" + config.getResource() + "/account/rpc/transfer");
-        servletHandler.addServletWithMapping(new ServletHolder(userServlet),  "/" + config.getResource() + "/user");
+        servletHandler.addServletWithMapping(new ServletHolder(accountServlet), "/" + config.getResource() + "/account");
+        servletHandler.addServletWithMapping(new ServletHolder(transferServlet), "/" + config.getResource() + "/account/rpc/transfer");
+        servletHandler.addServletWithMapping(new ServletHolder(userServlet), "/" + config.getResource() + "/user");
 
         server.setHandler(servletHandler);
         try {
             server.start();
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return server;
     }
 }
