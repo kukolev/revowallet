@@ -7,6 +7,18 @@
     <groupId>temp</groupId>
     <artifactId>revowallet</artifactId>
     <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
+        <log4j.version>2.11.2</log4j.version>
+        <commons-dbcp.version>1.4</commons-dbcp.version>
+        <h2.version>1.4.199</h2.version>
+        <jackson-databind.version>2.9.8</jackson-databind.version>
+        <jetty.version>9.4.3.v20170317</jetty.version>
+        <junit-jupiter-engine.version>5.1.0</junit-jupiter-engine.version>
+        <mockito.version>1.9.5</mockito.version>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -20,74 +32,63 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.1</version>
+                <version>${maven-surefire-plugin.version}</version>
             </plugin>
         </plugins>
     </build>
 
     <dependencies>
-
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.11.2</version>
+            <version>${log4j.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.11.2</version>
+            <version>${log4j.version}</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/commons-dbcp/commons-dbcp -->
         <dependency>
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
-            <version>1.4</version>
+            <version>${commons-dbcp.version}</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.4.199</version>
+            <version>${h2.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.8</version>
+            <version>${jackson-databind.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.9</version>
         </dependency>
-
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
-            <version>9.4.3.v20170317</version>
+            <version>${jetty.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-servlet</artifactId>
-            <version>9.4.3.v20170317</version>
+            <version>${jetty.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.1.0</version>
+            <version>${junit-jupiter-engine.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.mockito/mockito-all -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
-            <version>1.9.5</version>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 </project>
