@@ -10,7 +10,8 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-import servlet.TransferServlet;
+import servlet.TransferByIdServlet;
+import servlet.TransferByNumberServlet;
 import servlet.UserServlet;
 import servlet.AccountServlet;
 
@@ -36,9 +37,10 @@ public class Configurator {
         UserService userService = new UserService(userDao);
         AccountServlet accountServlet = new AccountServlet(accountService);
         UserServlet userServlet = new UserServlet(userService);
-        TransferServlet transferServlet = new TransferServlet(accountService);
+        TransferByIdServlet transferByIdServlet = new TransferByIdServlet(accountService);
+        TransferByNumberServlet transferByNumberServlet = new TransferByNumberServlet(accountService);
 
-        initServer(config, accountServlet, userServlet, transferServlet);
+        initServer(config, accountServlet, userServlet, transferByIdServlet, transferByNumberServlet);
     }
 
     private BasicDataSource initConnection(AppConfig config) {
@@ -55,7 +57,8 @@ public class Configurator {
     private void initServer(AppConfig config,
                             AccountServlet accountServlet,
                             UserServlet userServlet,
-                            TransferServlet transferServlet) {
+                            TransferByIdServlet transferByIdServlet,
+                            TransferByNumberServlet transferByNumberServlet) {
         Server server = new Server();
         ServerConnector connector = new ServerConnector(server);
         connector.setPort(Integer.valueOf(config.getPort()));
@@ -63,7 +66,8 @@ public class Configurator {
 
         ServletHandler servletHandler = new ServletHandler();
         servletHandler.addServletWithMapping(new ServletHolder(accountServlet), "/" + config.getResource() + "/account");
-        servletHandler.addServletWithMapping(new ServletHolder(transferServlet), "/" + config.getResource() + "/account/rpc/transfer");
+        servletHandler.addServletWithMapping(new ServletHolder(transferByIdServlet), "/" + config.getResource() + "/account/rpc/transfer_by_id");
+        servletHandler.addServletWithMapping(new ServletHolder(transferByNumberServlet), "/" + config.getResource() + "/account/rpc/transfer_by_number");
         servletHandler.addServletWithMapping(new ServletHolder(userServlet), "/" + config.getResource() + "/user");
 
         server.setHandler(servletHandler);

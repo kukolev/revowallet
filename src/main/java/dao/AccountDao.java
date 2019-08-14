@@ -16,12 +16,9 @@ public class AccountDao extends AbstractDao<Account> {
     private static final String UPDATE_ACCOUNT = "UPDATE Accounts SET account_number = ?, money = ?, user_id = ? WHERE account_id = ?";
     private static final String SELECT_ACCOUNT_BY_ID = "SELECT account_id, account_number, money, user_id FROM Accounts WHERE account_id = ?";
     private static final String SELECT_ACCOUNT_BY_NUMBER = "SELECT account_id, account_number, money, user_id FROM Accounts WHERE account_number = ?";
-    private static final String UPDATE_MONEY_BY_ID =
+    private static final String UPDATE_MONEY =
             "UPDATE Accounts SET money = money - ? WHERE account_id = ?;" +
                     "UPDATE Accounts SET money = money + ? WHERE account_id = ?";
-    private static final String UPDATE_MONEY_BY_NUMBER =
-            "UPDATE Accounts SET money = money - ? WHERE account_number = ?;" +
-                    "UPDATE Accounts SET money = money + ? WHERE account_number = ?";
 
     public AccountDao(BasicDataSource dataSource) {
         super(dataSource);
@@ -161,7 +158,7 @@ public class AccountDao extends AbstractDao<Account> {
     public void transferById(long idSource, long idDest, BigDecimal money) {
         Connection conn = getConn();
         try {
-            PreparedStatement statement = conn.prepareStatement(UPDATE_MONEY_BY_ID);
+            PreparedStatement statement = conn.prepareStatement(UPDATE_MONEY);
             statement.setBigDecimal(1, money);
             statement.setLong(2, idSource);
             statement.setBigDecimal(3, money);
@@ -183,31 +180,4 @@ public class AccountDao extends AbstractDao<Account> {
             }
         }
     }
-
-    public void transferByNumber(String numberSource, String numberDest, BigDecimal money) {
-        Connection conn = getConn();
-        try {
-            PreparedStatement statement = conn.prepareStatement(UPDATE_MONEY_BY_NUMBER);
-            statement.setBigDecimal(1, money);
-            statement.setString(2, numberSource);
-            statement.setBigDecimal(3, money);
-            statement.setString(4, numberDest);
-            statement.executeUpdate();
-            conn.commit();
-        } catch (SQLException e) {
-            try {
-                conn.rollback();
-            } catch (SQLException e1) {
-                throw new RuntimeException(e1);
-            }
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                conn.close();
-            } catch (SQLException e2) {
-                e2.printStackTrace();
-            }
-        }
-    }
-
 }

@@ -18,13 +18,13 @@ import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static util.ServletUtils.extractPostRequestBody;
 
-public class TransferServlet extends HttpServlet {
+public class TransferByIdServlet extends HttpServlet {
 
-    private static final Logger LOGGER = LogManager.getLogger(TransferServlet.class.getCanonicalName());
+    private static final Logger LOGGER = LogManager.getLogger(TransferByIdServlet.class.getCanonicalName());
     private final AccountService accountService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public TransferServlet(AccountService accountService) {
+    public TransferByIdServlet(AccountService accountService) {
         this.accountService = accountService;
     }
 

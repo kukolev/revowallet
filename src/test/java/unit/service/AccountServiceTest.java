@@ -57,7 +57,7 @@ class AccountServiceTest {
     void testTransferByNumber() {
         accountService.transferByNumber("40817810099910000001", "40817810099910000002", new BigDecimal("100.10"));
         verify(accountDao, times(1))
-                .transferByNumber("40817810099910000001", "40817810099910000002", new BigDecimal("100.10"));
+                .transferById(1, 2, new BigDecimal("100.10"));
     }
 
     @Test

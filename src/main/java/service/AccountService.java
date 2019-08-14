@@ -47,7 +47,7 @@ public class AccountService {
         validateAccounts(source, dest);
         validateEnoughMoney(source, money);
 
-        accountDao.transferByNumber(idSource, idDest, money);
+        accountDao.transferById(source.getId(), dest.getId(), money);
         LOGGER.debug("Finish transferByNumber: idSource = {}, idDest = {}, money = {}");
     }
 

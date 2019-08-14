@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import domain.Account;
 import domain.User;
 import dto.TransferByIdDto;
+import dto.TransferByNumberDto;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -37,7 +38,7 @@ class Front2BackTest {
         BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccountId);
         BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccountId);
 
-        // TransferByIdDto money from Alice to Bob
+        // Transfer money from Alice to Bob
         BigDecimal money = new BigDecimal("541.32");
         transferMoney(aliceAccountId, bobAccountId, money);
 
@@ -56,7 +57,7 @@ class Front2BackTest {
         BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccountId);
         BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccountId);
 
-        // TransferByIdDto money from Alice to Bob
+        // Transfer money from Alice to Bob
         BigDecimal money = new BigDecimal("0.0");
         transferMoney(aliceAccountId, bobAccountId, money);
 
@@ -75,7 +76,7 @@ class Front2BackTest {
         BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccountId);
         BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccountId);
 
-        // TransferByIdDto money from Bob to Alice
+        // Transfer money from Bob to Alice
         BigDecimal money = new BigDecimal("123.45");
         transferMoney(bobAccountId, aliceAccountId, money);
 
@@ -87,6 +88,44 @@ class Front2BackTest {
     }
 
     @Test
+    void testTransferByNumberBobToAlice() throws IOException {
+        // Find money of both
+        Long aliceAccountId = queryAccountFirstByPhone("7 (777) 777-77-77");
+        Long bobAccountId = queryAccountFirstByPhone("7 (666) 666-66-66");
+        BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccountId);
+        BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccountId);
+
+        // Transfer money from Bob to Alice
+        BigDecimal money = new BigDecimal("123.45");
+        transferMoneyByNumber("40817810099910000002", "40817810099910000001", money);
+
+        // Check result
+        BigDecimal aliceFinMoney = queryMoneyByAccountId(aliceAccountId);
+        BigDecimal bobFinMoney = queryMoneyByAccountId(bobAccountId);
+        assertEquals(bobFinMoney, bobStartMoney.subtract(money));
+        assertEquals(aliceFinMoney, aliceStartMoney.add(money));
+    }
+
+    @Test
+    void testTransferByNumberBobToAliceWrongNumber() throws IOException {
+        // Find money of both
+        Long aliceAccountId = queryAccountFirstByPhone("7 (777) 777-77-77");
+        Long bobAccountId = queryAccountFirstByPhone("7 (666) 666-66-66");
+        BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccountId);
+        BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccountId);
+
+        // Transfer money from Bob to Alice
+        BigDecimal money = new BigDecimal("123.45");
+        transferMoneyByNumber("wrong_number_1", "wrong_number_2", money);
+
+        // Check result
+        BigDecimal aliceFinMoney = queryMoneyByAccountId(aliceAccountId);
+        BigDecimal bobFinMoney = queryMoneyByAccountId(bobAccountId);
+        assertEquals(bobFinMoney, bobStartMoney);
+        assertEquals(aliceFinMoney, aliceStartMoney);
+    }
+
+    @Test
     void testsTransferTooMuch() throws IOException {
         // Find money of both
         Long aliceAccountId = queryAccountFirstByPhone("7 (777) 777-77-77");
@@ -94,7 +133,7 @@ class Front2BackTest {
         BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccountId);
         BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccountId);
 
-        // TransferByIdDto money from Bob to Alice
+        // Transfer money from Bob to Alice
         BigDecimal money = aliceStartMoney.add(new BigDecimal("1000"));
         transferMoney(aliceAccountId, bobAccountId, money);
 
@@ -112,7 +151,7 @@ class Front2BackTest {
         Long bobAccountId = queryAccountFirstByPhone("7 (666) 666-66-66");
         BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccountId);
 
-        // TransferByIdDto money from Bob to Alice
+        // Transfer money from Bob to Alice
         BigDecimal money = new BigDecimal("1000");
         int resultCode = transferMoney(aliceAccountId, bobAccountId, money);
         assertEquals(400, resultCode);
@@ -129,7 +168,7 @@ class Front2BackTest {
         Long bobAccountId = Long.MIN_VALUE;
         BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccountId);
 
-        // TransferByIdDto money from Bob to Alice
+        // Transfer money from Bob to Alice
         BigDecimal money = new BigDecimal("1000");
         int resultCode = transferMoney(aliceAccountId, bobAccountId, money);
         assertEquals(400, resultCode);
@@ -163,7 +202,7 @@ class Front2BackTest {
     private int transferMoney(Long source, Long dest, BigDecimal money) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         HttpClient client = HttpClientBuilder.create().build();
-        HttpPost httpPost = new HttpPost("http://localhost:8080/test/account/rpc/transfer");
+        HttpPost httpPost = new HttpPost("http://localhost:8080/test/account/rpc/transfer_by_id");
 
         TransferByIdDto transferByIdDto = new TransferByIdDto();
         transferByIdDto.setSource(source);
@@ -171,6 +210,22 @@ class Front2BackTest {
         transferByIdDto.setMoney(money);
 
         String transferPayload = mapper.writeValueAsString(transferByIdDto);
+        httpPost.setEntity(new StringEntity(transferPayload));
+        HttpResponse response = client.execute(httpPost);
+        return response.getStatusLine().getStatusCode();
+    }
+
+    private int transferMoneyByNumber(String source, String dest, BigDecimal money) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpPost httpPost = new HttpPost("http://localhost:8080/test/account/rpc/transfer_by_number");
+
+        TransferByNumberDto transferByNumberDto = new TransferByNumberDto();
+        transferByNumberDto.setSource(source);
+        transferByNumberDto.setDestination(dest);
+        transferByNumberDto.setMoney(money);
+
+        String transferPayload = mapper.writeValueAsString(transferByNumberDto);
         httpPost.setEntity(new StringEntity(transferPayload));
         HttpResponse response = client.execute(httpPost);
         return response.getStatusLine().getStatusCode();
@@ -208,7 +263,7 @@ class Front2BackTest {
         aliceAccount.setMoney(new BigDecimal("1000.0"));
 
         Account bobAccount = new Account();
-        bobAccount.setAccountNumber("4081781009991000000");
+        bobAccount.setAccountNumber("40817810099910000002");
         bobAccount.setUserId(bob.getId());
         bobAccount.setMoney(new BigDecimal("2000.0"));
 
