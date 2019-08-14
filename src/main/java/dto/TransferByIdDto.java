@@ -4,7 +4,7 @@ import domain.AbstractDomain;
 
 import java.math.BigDecimal;
 
-public class TransferDto extends AbstractDomain {
+public class TransferByIdDto extends AbstractDomain {
 
     private Long source;
     private Long destination;

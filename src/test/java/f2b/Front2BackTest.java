@@ -4,7 +4,7 @@ import app.Configurator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import domain.Account;
 import domain.User;
-import dto.TransferDto;
+import dto.TransferByIdDto;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -37,7 +37,7 @@ class Front2BackTest {
         BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccountId);
         BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccountId);
 
-        // TransferDto money from Alice to Bob
+        // TransferByIdDto money from Alice to Bob
         BigDecimal money = new BigDecimal("541.32");
         transferMoney(aliceAccountId, bobAccountId, money);
 
@@ -56,7 +56,7 @@ class Front2BackTest {
         BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccountId);
         BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccountId);
 
-        // TransferDto money from Alice to Bob
+        // TransferByIdDto money from Alice to Bob
         BigDecimal money = new BigDecimal("0.0");
         transferMoney(aliceAccountId, bobAccountId, money);
 
@@ -75,7 +75,7 @@ class Front2BackTest {
         BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccountId);
         BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccountId);
 
-        // TransferDto money from Bob to Alice
+        // TransferByIdDto money from Bob to Alice
         BigDecimal money = new BigDecimal("123.45");
         transferMoney(bobAccountId, aliceAccountId, money);
 
@@ -94,7 +94,7 @@ class Front2BackTest {
         BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccountId);
         BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccountId);
 
-        // TransferDto money from Bob to Alice
+        // TransferByIdDto money from Bob to Alice
         BigDecimal money = aliceStartMoney.add(new BigDecimal("1000"));
         transferMoney(aliceAccountId, bobAccountId, money);
 
@@ -112,7 +112,7 @@ class Front2BackTest {
         Long bobAccountId = queryAccountFirstByPhone("7 (666) 666-66-66");
         BigDecimal bobStartMoney = queryMoneyByAccountId(bobAccountId);
 
-        // TransferDto money from Bob to Alice
+        // TransferByIdDto money from Bob to Alice
         BigDecimal money = new BigDecimal("1000");
         int resultCode = transferMoney(aliceAccountId, bobAccountId, money);
         assertEquals(400, resultCode);
@@ -129,7 +129,7 @@ class Front2BackTest {
         Long bobAccountId = Long.MIN_VALUE;
         BigDecimal aliceStartMoney = queryMoneyByAccountId(aliceAccountId);
 
-        // TransferDto money from Bob to Alice
+        // TransferByIdDto money from Bob to Alice
         BigDecimal money = new BigDecimal("1000");
         int resultCode = transferMoney(aliceAccountId, bobAccountId, money);
         assertEquals(400, resultCode);
@@ -165,12 +165,12 @@ class Front2BackTest {
         HttpClient client = HttpClientBuilder.create().build();
         HttpPost httpPost = new HttpPost("http://localhost:8080/test/account/rpc/transfer");
 
-        TransferDto transferDto = new TransferDto();
-        transferDto.setSource(source);
-        transferDto.setDestination(dest);
-        transferDto.setMoney(money);
+        TransferByIdDto transferByIdDto = new TransferByIdDto();
+        transferByIdDto.setSource(source);
+        transferByIdDto.setDestination(dest);
+        transferByIdDto.setMoney(money);
 
-        String transferPayload = mapper.writeValueAsString(transferDto);
+        String transferPayload = mapper.writeValueAsString(transferByIdDto);
         httpPost.setEntity(new StringEntity(transferPayload));
         HttpResponse response = client.execute(httpPost);
         return response.getStatusLine().getStatusCode();

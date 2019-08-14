@@ -27,16 +27,28 @@ public class AccountService {
         this.userDao = userDao;
     }
 
-    public void transfer(Long idSource, Long idDest, BigDecimal money) {
-        LOGGER.debug("Start transfer: idSource = {}, idDest = {}, money = {}");
+    public void transferById(Long idSource, Long idDest, BigDecimal money) {
+        LOGGER.debug("Start transferById: idSource = {}, idDest = {}, money = {}");
         Account source = accountDao.find(idSource);
         Account dest = accountDao.find(idDest);
 
         validateAccounts(source, dest);
         validateEnoughMoney(source, money);
 
-        accountDao.transfer(idSource, idDest, money);
-        LOGGER.debug("Finish transfer: idSource = {}, idDest = {}, money = {}");
+        accountDao.transferById(idSource, idDest, money);
+        LOGGER.debug("Finish transferById: idSource = {}, idDest = {}, money = {}");
+    }
+
+    public void transferByNumber(String idSource, String idDest, BigDecimal money) {
+        LOGGER.debug("Start transferByNumber: idSource = {}, idDest = {}, money = {}");
+        Account source = accountDao.findByNumber(idSource);
+        Account dest = accountDao.findByNumber(idDest);
+
+        validateAccounts(source, dest);
+        validateEnoughMoney(source, money);
+
+        accountDao.transferByNumber(idSource, idDest, money);
+        LOGGER.debug("Finish transferByNumber: idSource = {}, idDest = {}, money = {}");
     }
 
     private void validateAccounts(Account source, Account dest) {

@@ -15,6 +15,7 @@ public class AccountDao extends AbstractDao<Account> {
     private static final String INSERT_ACCOUNT = "INSERT INTO Accounts(account_number, money, user_id) VALUES(?, ?, ?)";
     private static final String UPDATE_ACCOUNT = "UPDATE Accounts SET account_number = ?, money = ?, user_id = ? WHERE account_id = ?";
     private static final String SELECT_ACCOUNT_BY_ID = "SELECT account_id, account_number, money, user_id FROM Accounts WHERE account_id = ?";
+    private static final String SELECT_ACCOUNT_BY_NUMBER = "SELECT account_id, account_number, money, user_id FROM Accounts WHERE account_number = ?";
     private static final String UPDATE_MONEY_BY_ID =
             "UPDATE Accounts SET money = money - ? WHERE account_id = ?;" +
                     "UPDATE Accounts SET money = money + ? WHERE account_id = ?";
@@ -30,7 +31,7 @@ public class AccountDao extends AbstractDao<Account> {
     public Account find(long id) {
         Connection conn = getConn();
         try {
-            PreparedStatement statement = conn.prepareStatement(SELECT_ACCOUNT_BY_ID, RETURN_GENERATED_KEYS);
+            PreparedStatement statement = conn.prepareStatement(SELECT_ACCOUNT_BY_ID);
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -60,6 +61,41 @@ public class AccountDao extends AbstractDao<Account> {
             }
         }
     }
+
+    public Account findByNumber(String number) {
+        Connection conn = getConn();
+        try {
+            PreparedStatement statement = conn.prepareStatement(SELECT_ACCOUNT_BY_NUMBER);
+            statement.setString(1, number);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                Account account = new Account();
+                account.setId(resultSet.getLong("account_id"));
+                account.setAccountNumber(resultSet.getString("account_number"));
+                account.setMoney(resultSet.getBigDecimal("money"));
+                account.setUserId(resultSet.getLong("user_id"));
+                conn.commit();
+                conn.close();
+                return account;
+            }
+            conn.commit();
+            return null;
+        } catch (SQLException e) {
+            try {
+                conn.rollback();
+            } catch (SQLException e1) {
+                throw new RuntimeException(e1);
+            }
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e2) {
+                e2.printStackTrace();
+            }
+        }
+    }
+
 
     public void save(Account obj) {
         Connection conn = getConn();
@@ -122,7 +158,7 @@ public class AccountDao extends AbstractDao<Account> {
         }
     }
 
-    public void transfer(long idSource, long idDest, BigDecimal money) {
+    public void transferById(long idSource, long idDest, BigDecimal money) {
         Connection conn = getConn();
         try {
             PreparedStatement statement = conn.prepareStatement(UPDATE_MONEY_BY_ID);
@@ -147,4 +183,31 @@ public class AccountDao extends AbstractDao<Account> {
             }
         }
     }
+
+    public void transferByNumber(String numberSource, String numberDest, BigDecimal money) {
+        Connection conn = getConn();
+        try {
+            PreparedStatement statement = conn.prepareStatement(UPDATE_MONEY_BY_NUMBER);
+            statement.setBigDecimal(1, money);
+            statement.setString(2, numberSource);
+            statement.setBigDecimal(3, money);
+            statement.setString(4, numberDest);
+            statement.executeUpdate();
+            conn.commit();
+        } catch (SQLException e) {
+            try {
+                conn.rollback();
+            } catch (SQLException e1) {
+                throw new RuntimeException(e1);
+            }
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e2) {
+                e2.printStackTrace();
+            }
+        }
+    }
+
 }
