@@ -35,7 +35,7 @@ public class AccountService {
         validateAccounts(source, dest);
         validateEnoughMoney(source, money);
 
-        accountDao.transfer(source, dest, money);
+        accountDao.transfer(idSource, idDest, money);
         LOGGER.debug("Finish transfer: idSource = {}, idDest = {}, money = {}");
     }
 

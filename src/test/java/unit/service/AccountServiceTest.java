@@ -47,9 +47,7 @@ class AccountServiceTest {
     @Test
     void testTransfer() {
         accountService.transfer(1L, 2L, new BigDecimal("100.10"));
-        Account account1 = accountDao.find(1);
-        Account account2 = accountDao.find(2);
-        verify(accountDao, times(1)).transfer(account1, account2, new BigDecimal("100.10"));
+        verify(accountDao, times(1)).transfer(1, 2, new BigDecimal("100.10"));
     }
 
     @Test

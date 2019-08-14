@@ -1,8 +1,7 @@
 package dao;
 
 import domain.Account;
-import org.apache.commons.dbcp.BasicDataSource;
-
+import org.apache.commons.dbcp2.BasicDataSource;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,9 +15,12 @@ public class AccountDao extends AbstractDao<Account> {
     private static final String INSERT_ACCOUNT = "INSERT INTO Accounts(account_number, money, user_id) VALUES(?, ?, ?)";
     private static final String UPDATE_ACCOUNT = "UPDATE Accounts SET account_number = ?, money = ?, user_id = ? WHERE account_id = ?";
     private static final String SELECT_ACCOUNT_BY_ID = "SELECT account_id, account_number, money, user_id FROM Accounts WHERE account_id = ?";
-    private static final String UPDATE_MONEY =
+    private static final String UPDATE_MONEY_BY_ID =
             "UPDATE Accounts SET money = money - ? WHERE account_id = ?;" +
                     "UPDATE Accounts SET money = money + ? WHERE account_id = ?";
+    private static final String UPDATE_MONEY_BY_NUMBER =
+            "UPDATE Accounts SET money = money - ? WHERE account_number = ?;" +
+                    "UPDATE Accounts SET money = money + ? WHERE account_number = ?";
 
     public AccountDao(BasicDataSource dataSource) {
         super(dataSource);
@@ -120,14 +122,14 @@ public class AccountDao extends AbstractDao<Account> {
         }
     }
 
-    public void transfer(Account source, Account dest, BigDecimal money) {
+    public void transfer(long idSource, long idDest, BigDecimal money) {
         Connection conn = getConn();
         try {
-            PreparedStatement statement = conn.prepareStatement(UPDATE_MONEY);
+            PreparedStatement statement = conn.prepareStatement(UPDATE_MONEY_BY_ID);
             statement.setBigDecimal(1, money);
-            statement.setLong(2, source.getId());
+            statement.setLong(2, idSource);
             statement.setBigDecimal(3, money);
-            statement.setLong(4, dest.getId());
+            statement.setLong(4, idDest);
             statement.executeUpdate();
             conn.commit();
         } catch (SQLException e) {
