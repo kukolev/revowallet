@@ -7,6 +7,9 @@ public class AppConfig {
     private String connectionString;
     private String user;
     private String pass;
+    private int maxIdle;
+    private int minIdle;
+    private int maxStatements;
     private boolean isMem;
 
     public String getConnectionString() {
@@ -55,5 +58,29 @@ public class AppConfig {
 
     public void setResource(String resource) {
         this.resource = resource;
+    }
+
+    public int getMaxIdle() {
+        return maxIdle;
+    }
+
+    public void setMaxIdle(int maxIdle) {
+        this.maxIdle = maxIdle;
+    }
+
+    public int getMinIdle() {
+        return minIdle;
+    }
+
+    public void setMinIdle(int minIdle) {
+        this.minIdle = minIdle;
+    }
+
+    public int getMaxStatements() {
+        return maxStatements;
+    }
+
+    public void setMaxStatements(int maxStatements) {
+        this.maxStatements = maxStatements;
     }
 }

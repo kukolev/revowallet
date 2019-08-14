@@ -40,13 +40,12 @@ public class Configurator {
 
     private BasicDataSource initConnection(AppConfig config) {
         BasicDataSource dataSource = new BasicDataSource();
-        // todo: parameters for max min
         dataSource.setUrl(config.getConnectionString());
         dataSource.setUsername(config.getUser());
         dataSource.setPassword(config.getPass());
-        dataSource.setMinIdle(5);
-        dataSource.setMaxIdle(10);
-        dataSource.setMaxOpenPreparedStatements(100);
+        dataSource.setMinIdle(config.getMinIdle());
+        dataSource.setMaxIdle(config.getMaxIdle());
+        dataSource.setMaxOpenPreparedStatements(config.getMaxStatements());
         return dataSource;
     }
 

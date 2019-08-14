@@ -143,7 +143,7 @@ class Front2BackTest {
         ObjectMapper mapper = new ObjectMapper();
         String urlPhone = phone.replace(" ", "%20");
         HttpClient client = HttpClientBuilder.create().build();
-        HttpGet httpGet = new HttpGet("http://localhost:8888/test/account?phone=" + urlPhone);
+        HttpGet httpGet = new HttpGet("http://localhost:8080/test/account?phone=" + urlPhone);
         HttpResponse response = client.execute(httpGet);
         String payload = EntityUtils.toString(response.getEntity());
         Account[] accounts = mapper.readValue(payload, Account[].class);
@@ -153,7 +153,7 @@ class Front2BackTest {
     private BigDecimal queryMoneyByAccountId(Long id) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         HttpClient client = HttpClientBuilder.create().build();
-        HttpGet httpGet = new HttpGet("http://localhost:8888/test/account?id=" + id);
+        HttpGet httpGet = new HttpGet("http://localhost:8080/test/account?id=" + id);
         HttpResponse response = client.execute(httpGet);
         String payload = EntityUtils.toString(response.getEntity());
         Account account = mapper.readValue(payload, Account.class);
@@ -163,7 +163,7 @@ class Front2BackTest {
     private int transferMoney(Long source, Long dest, BigDecimal money) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         HttpClient client = HttpClientBuilder.create().build();
-        HttpPost httpPost = new HttpPost("http://localhost:8888/test/account/rpc/transfer");
+        HttpPost httpPost = new HttpPost("http://localhost:8080/test/account/rpc/transfer");
 
         TransferDto transferDto = new TransferDto();
         transferDto.setSource(source);
@@ -180,7 +180,7 @@ class Front2BackTest {
         ObjectMapper mapper = new ObjectMapper();
 
         HttpClient client = HttpClientBuilder.create().build();
-        HttpPost httpPost = new HttpPost("http://localhost:8888/test/user");
+        HttpPost httpPost = new HttpPost("http://localhost:8080/test/user");
 
         User alice = new User();
         alice.setName("Alice");
@@ -212,7 +212,7 @@ class Front2BackTest {
         bobAccount.setUserId(bob.getId());
         bobAccount.setMoney(new BigDecimal("2000.0"));
 
-        httpPost = new HttpPost("http://localhost:8888/test/account");
+        httpPost = new HttpPost("http://localhost:8080/test/account");
         alicePayload = mapper.writeValueAsString(aliceAccount);
         httpPost.setEntity(new StringEntity(alicePayload));
         client.execute(httpPost);

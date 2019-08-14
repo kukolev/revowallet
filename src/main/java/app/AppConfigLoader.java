@@ -20,6 +20,9 @@ class AppConfigLoader {
             appConfig.setUser(prop.getProperty("user"));
             appConfig.setPass(prop.getProperty("pass"));
             appConfig.setMem(Boolean.valueOf(prop.getProperty("is_mem")));
+            appConfig.setMaxIdle(Integer.valueOf(prop.getProperty("max_idle")));
+            appConfig.setMaxIdle(Integer.valueOf(prop.getProperty("min_idle")));
+            appConfig.setMaxIdle(Integer.valueOf(prop.getProperty("max_statements")));
 
         } catch (IOException e) {
             e.printStackTrace();
