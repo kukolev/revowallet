@@ -17,7 +17,9 @@ public class UserService {
     }
 
     public User persist(User user) {
-        LOGGER.info("Start persist: user = {}", str(user));
-        return userDao.persist(user);
+        LOGGER.debug("Start persist: user = {}", str(user));
+        User result = userDao.persist(user);
+        LOGGER.debug("Finish persist: user = {}", str(result));
+        return result;
     }
 }

@@ -41,7 +41,6 @@ public class UserDao extends AbstractDao<User> {
                 return user;
             }
             conn.commit();
-            conn.close();
             return null;
         } catch (SQLException e) {
             try {
@@ -106,7 +105,6 @@ public class UserDao extends AbstractDao<User> {
             long userId = resultSet.getLong(1);
             obj.setId(userId);
             conn.commit();
-            conn.close();
             return obj;
         } catch (SQLException e) {
             try {

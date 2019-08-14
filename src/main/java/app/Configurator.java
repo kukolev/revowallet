@@ -4,6 +4,8 @@ import dao.AccountDao;
 import dao.UserDao;
 import org.apache.commons.dbcp2.BasicDataSource;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -22,7 +24,11 @@ import static util.DatabaseUtils.initMemoryDatabase;
 
 public class Configurator {
 
+    private static final Logger LOGGER = LogManager.getLogger(Configurator.class.getCanonicalName());
+
+
     public void start() {
+        LOGGER.debug("Start start");
         AppConfigLoader configLoader = new AppConfigLoader();
         AppConfig config = configLoader.load();
 
@@ -41,6 +47,7 @@ public class Configurator {
         TransferByNumberServlet transferByNumberServlet = new TransferByNumberServlet(accountService);
 
         initServer(config, accountServlet, userServlet, transferByIdServlet, transferByNumberServlet);
+        LOGGER.debug("Finish start");
     }
 
     private BasicDataSource initConnection(AppConfig config) {

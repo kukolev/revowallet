@@ -38,7 +38,6 @@ public class AccountDao extends AbstractDao<Account> {
                 account.setMoney(resultSet.getBigDecimal("money"));
                 account.setUserId(resultSet.getLong("user_id"));
                 conn.commit();
-                conn.close();
                 return account;
             }
             conn.commit();
@@ -72,7 +71,6 @@ public class AccountDao extends AbstractDao<Account> {
                 account.setMoney(resultSet.getBigDecimal("money"));
                 account.setUserId(resultSet.getLong("user_id"));
                 conn.commit();
-                conn.close();
                 return account;
             }
             conn.commit();
@@ -104,7 +102,6 @@ public class AccountDao extends AbstractDao<Account> {
             statement.setLong(4, obj.getId());
             statement.executeUpdate();
             conn.commit();
-            conn.close();
         } catch (SQLException e) {
             try {
                 conn.rollback();

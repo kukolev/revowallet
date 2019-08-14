@@ -1,13 +1,20 @@
 package app;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import static util.MapperUtils.str;
+
 class AppConfigLoader {
 
-    public AppConfig load() {
+    private static final Logger LOGGER = LogManager.getLogger(AppConfigLoader.class.getCanonicalName());
 
+    public AppConfig load() {
+        LOGGER.debug("Start load");
         AppConfig appConfig = new AppConfig();
 
         try (InputStream input = AppConfigLoader.class.getClassLoader().getResourceAsStream("application.properties")) {
@@ -25,10 +32,11 @@ class AppConfigLoader {
             appConfig.setMaxIdle(Integer.valueOf(prop.getProperty("max_statements")));
 
         } catch (IOException e) {
+            LOGGER.error(e);
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-
+        LOGGER.debug("Finish load: appConfig = ", str(appConfig));
         return appConfig;
     }
 }

@@ -1,7 +1,6 @@
 package servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dto.TransferByIdDto;
 import dto.TransferByNumberDto;
 import exception.AccountNotFoundException;
 import exception.NotEnoughMoneyException;
