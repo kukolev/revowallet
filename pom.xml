@@ -15,7 +15,7 @@
         <h2.version>1.4.199</h2.version>
         <jackson-databind.version>2.9.9.3</jackson-databind.version>
         <jetty.version>9.4.19.v20190610</jetty.version>
-        <httpclient.version>4.5.9</httpclient.version>
+        <httpclient.version>4.5.13</httpclient.version>
         <junit-jupiter-engine.version>5.1.0</junit-jupiter-engine.version>
         <mockito.version>1.9.5</mockito.version>
     </properties>
