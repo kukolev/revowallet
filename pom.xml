@@ -10,7 +10,7 @@
 
     <properties>
         <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
-        <log4j.version>2.12.1</log4j.version>
+        <log4j.version>2.16.0</log4j.version>
         <commons-dbcp.version>2.7.0</commons-dbcp.version>
         <h2.version>1.4.199</h2.version>
         <jackson-databind.version>2.9.9.3</jackson-databind.version>
