@@ -12,7 +12,7 @@
         <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
         <log4j.version>2.12.1</log4j.version>
         <commons-dbcp.version>2.7.0</commons-dbcp.version>
-        <h2.version>1.4.199</h2.version>
+        <h2.version>2.0.206</h2.version>
         <jackson-databind.version>2.9.9.3</jackson-databind.version>
         <jetty.version>9.4.19.v20190610</jetty.version>
         <httpclient.version>4.5.9</httpclient.version>
