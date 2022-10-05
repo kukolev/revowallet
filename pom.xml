@@ -13,7 +13,7 @@
         <log4j.version>2.12.1</log4j.version>
         <commons-dbcp.version>2.7.0</commons-dbcp.version>
         <h2.version>1.4.199</h2.version>
-        <jackson-databind.version>2.9.9.3</jackson-databind.version>
+        <jackson-databind.version>2.12.6.1</jackson-databind.version>
         <jetty.version>9.4.19.v20190610</jetty.version>
         <httpclient.version>4.5.9</httpclient.version>
         <junit-jupiter-engine.version>5.1.0</junit-jupiter-engine.version>
